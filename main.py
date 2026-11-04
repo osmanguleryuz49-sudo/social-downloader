@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse, StreamingResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, StreamingResponse
 from urllib.parse import quote
 from urllib.request import Request, urlopen
 import re
@@ -197,10 +197,8 @@ _cache = {}
 CACHE_TTL = 600  # saniye
 
 YDL_OPTS = {
-    "format": "best[ext=mp4][protocol^=http]/best[protocol^=http]/best[ext=mp4]/best",
+    "format": "best",
     "skip_download": True,
-    "noplaylist": True,
-    "quiet": True,
 }
 
 
@@ -269,8 +267,9 @@ def download_file(url: str):
 
     try:
         upstream = urlopen(Request(data["video_url"], headers=data["headers"]), timeout=30)
-    except Exception as e:
-        raise HTTPException(status_code=502, detail=f"Video kaynağına ulaşılamadı: {str(e)}")
+    except Exception:
+        # Sunucu videoyu çekemezse eski yönteme dön: doğrudan video bağlantısını aç
+        return RedirectResponse(data["video_url"], status_code=307)
 
     ext = data["ext"]
     safe_title = re.sub(r'[\\/:*?"<>|\r\n]+', " ", data["title"]).strip()[:80] or "video"
