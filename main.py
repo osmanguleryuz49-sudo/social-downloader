@@ -3,7 +3,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, RedirectResponse, StreamingResponse
 from urllib.parse import quote
 from urllib.request import Request, urlopen
+import os
 import re
+import shutil
 import time
 import yt_dlp
 
@@ -200,6 +202,14 @@ YDL_OPTS = {
     "format": "best",
     "skip_download": True,
 }
+
+# Render "Secret Files" ile eklenen cookies.txt varsa kullan.
+# Dosya salt okunur klasörde durduğu için önce /tmp'ye kopyalanır.
+for _src in ("/etc/secrets/cookies.txt", "cookies.txt"):
+    if os.path.exists(_src):
+        shutil.copy(_src, "/tmp/cookies.txt")
+        YDL_OPTS["cookiefile"] = "/tmp/cookies.txt"
+        break
 
 
 def extract(url: str):
