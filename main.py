@@ -199,7 +199,7 @@ _cache = {}
 CACHE_TTL = 600  # saniye
 
 YDL_OPTS = {
-    "format": "best",
+    "format": "b[ext=mp4]/b/bv*",
     "skip_download": True,
 }
 
