@@ -209,7 +209,10 @@ for _src in ("/etc/secrets/cookies.txt", "cookies.txt"):
     if os.path.exists(_src):
         shutil.copy(_src, "/tmp/cookies.txt")
         YDL_OPTS["cookiefile"] = "/tmp/cookies.txt"
+        print(f"[cookies] Kullanılıyor: {_src}")
         break
+else:
+    print("[cookies] cookies.txt bulunamadı, cookie'siz çalışılıyor")
 
 
 def extract(url: str):
